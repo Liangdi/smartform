@@ -9,6 +9,7 @@ function SmartForm(id,els,option){
 	this.els = [];
 	this.url=option.url;
 	this.action = option.action?option.action:"GET";
+	this.pre = option.pre?option.pre:"";
 	
 	
 	this.debug = option.debug?true:false;
@@ -20,7 +21,8 @@ function SmartForm(id,els,option){
 	
 	for (var i = 0; i < els.length; i++) {
 		var id = els[i];
-		var el = this.form.find("#"+id);
+		var elId = this.pre+els[i];
+		var el = this.form.find("#"+elId);
 		var elObj = {
 			id:id,
 			el:el,
@@ -65,7 +67,7 @@ SmartForm.prototype.submit = function(){
 		console.log("data:",data);
 	}
 	var url = this.url;
-	var type = this.type;
+	var type = this.action;
 	var successCallbacks = this.successCallbacks;
 	var completeCallbacks = this.completeCallbacks;
 	$.ajax({
@@ -85,6 +87,12 @@ SmartForm.prototype.submit = function(){
 	});
 	
 	return false;
+};
+SmartForm.prototype.update = function(value){
+	for (var k in value) {
+		//console.log(k,value[k]);
+		this.form.find("#" + this.pre + k).val(value[k]);
+	}
 };
 SmartForm.prototype.onSuccess = function(callback){
 	typeof callback === "function" && this.successCallbacks.push(callback);
