@@ -42,7 +42,13 @@ function SmartForm(id,els,option){
 	});
 }
 SmartForm.prototype.submit = function(){
-	
+	var CKEDITOR= window.CKEDITOR || undefined;
+	console.log(CKEDITOR);
+	if((typeof CKEDITOR) !=="undefined" && (typeof CKEDITOR.instances ) !=="undefined"  ){
+		 for ( instance in CKEDITOR.instances ){
+				CKEDITOR.instances[instance].updateElement();
+		 }
+	}
 	var data = {};
 	for (var i = 0; i < this.els.length; i++) {
 		var elObj = this.els[i];
