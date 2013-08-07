@@ -41,6 +41,13 @@ function SmartForm(id,els,option){
 		return false;
 	});
 }
+
+SmartForm.prototype.setAction = function(action) {
+	this.action = action;
+};
+SmartForm.prototype.setUrl = function(url){
+	this.url = url;
+};
 SmartForm.prototype.submit = function(){
 	var CKEDITOR= window.CKEDITOR || undefined;
 	console.log(CKEDITOR);
