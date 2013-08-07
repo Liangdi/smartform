@@ -53,6 +53,12 @@ SmartForm.prototype.submit = function(){
 	for (var i = 0; i < this.els.length; i++) {
 		var elObj = this.els[i];
 		
+		if(elObj.el.attr("data-ace")) {
+			var aceSession = elObj.el.attr("data-ace");
+			var code = window[aceSession].getSession().getValue();
+			elObj.el.val(code);
+		}
+		
 		var v = elObj.el.val();
 		var notNull = elObj.notNull;
 		if(this.debug){
@@ -97,7 +103,12 @@ SmartForm.prototype.submit = function(){
 SmartForm.prototype.update = function(value){
 	for (var k in value) {
 		//console.log(k,value[k]);
-		this.form.find("#" + this.pre + k).val(value[k]);
+		var el = this.form.find("#" + this.pre + k);
+		el.val(value[k]);
+		if(el.attr("data-ace")) {
+			var aceSession = el.attr("data-ace");
+			 window[aceSession].getSession().setValue(value[k]);
+		}
 	}
 };
 SmartForm.prototype.onSuccess = function(callback){
