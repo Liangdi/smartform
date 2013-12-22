@@ -6,6 +6,8 @@
 
 function SmartForm(id,els,option){
 	this.form = $("#" + id);
+	this.option = option || {};
+	this.option.els = els;
 	this.els = [];
 	this.url=option.url;
 	this.action = option.action?option.action:"GET";
@@ -18,6 +20,7 @@ function SmartForm(id,els,option){
 	this.failueCallbacks = [];
 	this.completeCallbacks = [];
 	this.validCallbacks = [];
+	this.beforeCallbacks = [];
 	
 	for (var i = 0; i < els.length; i++) {
 		var id = els[i];
@@ -42,6 +45,21 @@ function SmartForm(id,els,option){
 	});
 }
 
+SmartForm.prototype.updateEl = function() {
+	var els  = this.option.els;
+	this.els = [];
+	for (var i = 0; i < els.length; i++) {
+		var id = els[i];
+		var elId = this.pre+els[i];
+		var el = this.form.find("#"+elId);
+		var elObj = {
+			id:id,
+			el:el,
+			notNull:el.attr("data-not-null")?true:false
+		};
+		this.els.push(elObj);
+	}
+};
 SmartForm.prototype.setAction = function(action) {
 	this.action = action;
 };
@@ -69,7 +87,7 @@ SmartForm.prototype.submit = function(){
 		var v = elObj.el.val();
 		var notNull = elObj.notNull;
 		if(this.debug){
-			console.log("value:",elObj.id,notNull,v,v == null || v == "")	
+			console.log("value:",elObj.id,elObj.el,notNull,v,v == null || v == "")	
 		}
 		if(notNull && (v == null || v == "")){
 			for (var j = 0; j < this.validCallbacks.length; j++) {
@@ -89,6 +107,10 @@ SmartForm.prototype.submit = function(){
 	var type = this.action;
 	var successCallbacks = this.successCallbacks;
 	var completeCallbacks = this.completeCallbacks;
+	var beforeCallbacks = this.beforeCallbacks;
+	for (i = 0; i < beforeCallbacks.length; i++) {
+		beforeCallbacks[i](this);
+	}
 	$.ajax({
 		url:url,
 		type:type,
@@ -126,6 +148,9 @@ SmartForm.prototype.onComplete = function(callback){
 };
 SmartForm.prototype.onVerificationError = function(callback){
 	typeof callback === "function" && this.validCallbacks.push(callback);
+};
+SmartForm.prototype.onSubmit = function(callback){
+	typeof callback === "function" && this.beforeCallbacks.push(callback);
 };
 
 
